@@ -53,8 +53,8 @@ const LocalUsersTab: React.FC = () => {
 
   return (
     <div className="mt-4 flex flex-col gap-6 px-2">
-      <header className="flex w-full items-center justify-between">
-        <InputGroup className="max-w-xs">
+      <header className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <InputGroup className="w-full sm:max-w-xs">
           <InputGroupInput
             placeholder="Buscar por nome..."
             value={search}
@@ -65,7 +65,9 @@ const LocalUsersTab: React.FC = () => {
           </InputGroupAddon>
         </InputGroup>
 
-        <CreateUserModal isOpen={isOpen} onOpenChange={handleOpenChange} />
+        <div className="w-full sm:w-auto [&_button]:w-full sm:[&_button]:w-auto">
+          <CreateUserModal isOpen={isOpen} onOpenChange={handleOpenChange} />
+        </div>
       </header>
 
       <CardTable
