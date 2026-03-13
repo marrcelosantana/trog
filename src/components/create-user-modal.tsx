@@ -22,12 +22,13 @@ import {
   type CreateUserSchema,
 } from "@/schemas/create-user-schema";
 
-import { Plus } from "lucide-react";
+import { useLocalUsersStore } from "@/stores/use-local-users-store";
+import { Loader2, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   isOpen,
   onOpenChange,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const createUserForm = useForm<CreateUserSchema>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -46,9 +48,16 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       city: "",
     },
   });
+  const addUser = useLocalUsersStore((state) => state.addUser);
 
   const handleCreateUser = createUserForm.handleSubmit(async (data) => {
-    console.log(data);
+    setIsLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    addUser(data);
+    setIsLoading(false);
+    onOpenChange(false);
   });
 
   useEffect(() => {
@@ -149,8 +158,16 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
               >
                 Cancelar
               </Button>
-              <Button type="submit" className="cursor-pointer">
-                Adicionar usuário
+              <Button
+                type="submit"
+                className="w-[120px] cursor-pointer disabled:cursor-not-allowed"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Adicionar"
+                )}
               </Button>
             </div>
           </form>

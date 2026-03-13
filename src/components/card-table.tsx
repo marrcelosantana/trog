@@ -7,11 +7,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  CardTablePagination,
+  DeleteUserModal,
+  EditUserModal,
+} from "@/components";
+
 import type { User } from "@/types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { CardTablePagination, DeleteUserModal } from "@/components";
-import { Pencil } from "lucide-react";
-import { Button } from "./ui/button";
 import { useState } from "react";
 
 interface PaginationProps {
@@ -36,9 +39,14 @@ const CardTable: React.FC<CardTableProps> = ({
   const isEmpty = users.length === 0;
 
   const [deleteUserModalIsOpen, setDeleteUserModalIsOpen] = useState(false);
+  const [editUserModalIsOpen, setEditUserModalIsOpen] = useState(false);
 
   const handleDeleteUserModalOpenChange = (open: boolean) => {
     setDeleteUserModalIsOpen(open);
+  };
+
+  const handleEditUserModalOpenChange = (open: boolean) => {
+    setEditUserModalIsOpen(open);
   };
 
   return (
@@ -57,7 +65,7 @@ const CardTable: React.FC<CardTableProps> = ({
             {isEmpty ? (
               <TableRow>
                 <TableCell
-                  colSpan={3}
+                  colSpan={hasActions ? 4 : 3}
                   className="text-muted-foreground h-24 text-center"
                 >
                   {EMPTY_STATE_MESSAGE}
@@ -81,13 +89,10 @@ const CardTable: React.FC<CardTableProps> = ({
                   <TableCell>{user.address.city}</TableCell>
                   {hasActions && (
                     <TableCell className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="cursor-pointer"
-                      >
-                        <Pencil />
-                      </Button>
+                      <EditUserModal
+                        isOpen={editUserModalIsOpen}
+                        onOpenChange={handleEditUserModalOpenChange}
+                      />
                       <DeleteUserModal
                         isOpen={deleteUserModalIsOpen}
                         onOpenChange={handleDeleteUserModalOpenChange}
