@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 interface EditUserModalProps {
   isOpen: boolean;
@@ -78,6 +79,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     updateUser(userId, data);
+    toast.success("Usuário atualizado com sucesso");
     setIsLoading(false);
     onOpenChange(false);
   });

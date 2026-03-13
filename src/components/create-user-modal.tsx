@@ -29,6 +29,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -56,6 +57,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     addUser(data);
+    toast.success("Usuário adicionado com sucesso");
     setIsLoading(false);
     onOpenChange(false);
   });

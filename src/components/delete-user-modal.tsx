@@ -10,6 +10,7 @@ import { useLocalUsersStore } from "@/stores/use-local-users-store";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       deleteUser(userId);
+      toast.success("Usuário deletado com sucesso");
       setIsLoading(false);
       onOpenChange(false);
     }
