@@ -10,7 +10,7 @@ import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CardTable, CardTableSkeleton } from "@/components";
 
-const LIMIT = 10;
+const LIMIT = 7;
 const DEBOUNCE_MS = 400;
 
 const UsersTab: React.FC = () => {

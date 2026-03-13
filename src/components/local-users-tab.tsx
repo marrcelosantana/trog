@@ -7,13 +7,15 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { useLocalUsersStore } from "@/stores/use-local-users-store";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CardTable, CreateUserModal } from "@/components";
 
+const LIMIT = 7;
 const DEBOUNCE_MS = 400;
 
 const LocalUsersTab: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
   const users = useLocalUsersStore((state) => state.users);
@@ -33,6 +35,17 @@ const LocalUsersTab: React.FC = () => {
         .includes(normalizedSearch),
     );
   }, [debouncedSearch, users]);
+
+  const paginatedUsers = useMemo(() => {
+    const start = (page - 1) * LIMIT;
+    return filteredUsers.slice(start, start + LIMIT);
+  }, [filteredUsers, page]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / LIMIT));
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
@@ -55,7 +68,15 @@ const LocalUsersTab: React.FC = () => {
         <CreateUserModal isOpen={isOpen} onOpenChange={handleOpenChange} />
       </header>
 
-      <CardTable users={filteredUsers} hasActions />
+      <CardTable
+        users={paginatedUsers}
+        hasActions
+        pagination={{
+          currentPage: page,
+          totalPages,
+          onPageChange: setPage,
+        }}
+      />
     </div>
   );
 };

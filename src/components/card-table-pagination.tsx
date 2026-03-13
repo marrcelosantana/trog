@@ -45,8 +45,6 @@ const CardTablePagination: React.FC<CardTablePaginationProps> = ({
   totalPages,
   onPageChange,
 }) => {
-  if (totalPages <= 1) return null;
-
   const pages = getPageNumbers(currentPage, totalPages);
 
   const handleClick = (page: number) => (e: React.MouseEvent) => {
