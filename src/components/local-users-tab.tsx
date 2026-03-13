@@ -15,6 +15,7 @@ const DEBOUNCE_MS = 400;
 const LocalUsersTab: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+
   const users = useLocalUsersStore((state) => state.users);
   const debouncedSearch = useDebounce(search, DEBOUNCE_MS);
 

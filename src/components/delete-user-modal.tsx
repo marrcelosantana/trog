@@ -4,28 +4,41 @@ import {
   DialogHeader,
   DialogOverlay,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { useLocalUsersStore } from "@/stores/use-local-users-store";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "./ui/button";
-import { Trash } from "lucide-react";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  userId: string | null;
 }
 
 const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
   isOpen,
   onOpenChange,
+  userId,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const deleteUser = useLocalUsersStore((state) => state.deleteUser);
+
+  const handleConfirm = async () => {
+    if (userId) {
+      setIsLoading(true);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      deleteUser(userId);
+      setIsLoading(false);
+      onOpenChange(false);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="cursor-pointer">
-          <Trash />
-        </Button>
-      </DialogTrigger>
       <DialogOverlay />
       <DialogContent>
         <DialogHeader>
@@ -45,10 +58,15 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
               Cancelar
             </Button>
             <Button
-              onClick={() => onOpenChange(false)}
-              className="cursor-pointer"
+              onClick={handleConfirm}
+              className="w-[120px] cursor-pointer disabled:cursor-not-allowed"
+              disabled={isLoading}
             >
-              Confirmar
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Confirmar"
+              )}
             </Button>
           </div>
         </div>

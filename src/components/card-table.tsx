@@ -15,7 +15,9 @@ import {
 
 import type { User } from "@/types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Pencil, Trash } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 interface PaginationProps {
   currentPage: number;
@@ -41,12 +43,31 @@ const CardTable: React.FC<CardTableProps> = ({
   const [deleteUserModalIsOpen, setDeleteUserModalIsOpen] = useState(false);
   const [editUserModalIsOpen, setEditUserModalIsOpen] = useState(false);
 
+  const [selectedUserIdToDelete, setSelectedUserIdToDelete] = useState<
+    string | null
+  >(null);
+  const [selectedUserIdToEdit, setSelectedUserIdToEdit] = useState<
+    string | null
+  >(null);
+
   const handleDeleteUserModalOpenChange = (open: boolean) => {
     setDeleteUserModalIsOpen(open);
+    if (!open) setSelectedUserIdToDelete(null);
+  };
+
+  const handleOpenDeleteModal = (userId: string) => {
+    setSelectedUserIdToDelete(userId);
+    setDeleteUserModalIsOpen(true);
   };
 
   const handleEditUserModalOpenChange = (open: boolean) => {
     setEditUserModalIsOpen(open);
+    if (!open) setSelectedUserIdToEdit(null);
+  };
+
+  const handleOpenEditModal = (userId: string) => {
+    setSelectedUserIdToEdit(userId);
+    setEditUserModalIsOpen(true);
   };
 
   return (
@@ -89,14 +110,22 @@ const CardTable: React.FC<CardTableProps> = ({
                   <TableCell>{user.address.city}</TableCell>
                   {hasActions && (
                     <TableCell className="flex items-center gap-2">
-                      <EditUserModal
-                        isOpen={editUserModalIsOpen}
-                        onOpenChange={handleEditUserModalOpenChange}
-                      />
-                      <DeleteUserModal
-                        isOpen={deleteUserModalIsOpen}
-                        onOpenChange={handleDeleteUserModalOpenChange}
-                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="cursor-pointer"
+                        onClick={() => handleOpenEditModal(user.id)}
+                      >
+                        <Pencil />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="cursor-pointer"
+                        onClick={() => handleOpenDeleteModal(user.id)}
+                      >
+                        <Trash />
+                      </Button>
                     </TableCell>
                   )}
                 </TableRow>
@@ -112,6 +141,21 @@ const CardTable: React.FC<CardTableProps> = ({
           totalPages={pagination.totalPages}
           onPageChange={pagination.onPageChange}
         />
+      )}
+
+      {hasActions && (
+        <>
+          <EditUserModal
+            isOpen={editUserModalIsOpen}
+            onOpenChange={handleEditUserModalOpenChange}
+            userId={selectedUserIdToEdit}
+          />
+          <DeleteUserModal
+            isOpen={deleteUserModalIsOpen}
+            onOpenChange={handleDeleteUserModalOpenChange}
+            userId={selectedUserIdToDelete}
+          />
+        </>
       )}
     </>
   );

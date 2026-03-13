@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogOverlay,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
 import {
@@ -22,23 +21,35 @@ import {
   type CreateUserSchema,
 } from "@/schemas/create-user-schema";
 
-import { Pencil } from "lucide-react";
+import { useLocalUsersStore } from "@/stores/use-local-users-store";
+import { Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface EditUserModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  userId: string | null;
 }
 
 const EditUserModal: React.FC<EditUserModalProps> = ({
   isOpen,
   onOpenChange,
+  userId,
 }) => {
-  const createUserForm = useForm<CreateUserSchema>({
+  const [isLoading, setIsLoading] = useState(false);
+  const users = useLocalUsersStore((state) => state.users);
+  const updateUser = useLocalUsersStore((state) => state.updateUser);
+
+  const user = useMemo(
+    () => users.find((u) => u.id === userId) ?? null,
+    [users, userId],
+  );
+
+  const editUserForm = useForm<CreateUserSchema>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
       name: "",
@@ -47,24 +58,44 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
     },
   });
 
-  const handleCreateUser = createUserForm.handleSubmit(async (data) => {
-    console.log(data);
+  const watchedValues = editUserForm.watch();
+
+  const hasChanges = useMemo(() => {
+    if (!user) return false;
+    const fullName = `${user.firstName} ${user.lastName}`.trim();
+    return (
+      watchedValues.name !== fullName ||
+      watchedValues.email !== user.email ||
+      watchedValues.city !== user.address.city
+    );
+  }, [user, watchedValues]);
+
+  const handleUpdateUser = editUserForm.handleSubmit(async (data) => {
+    if (!userId) return;
+
+    setIsLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    updateUser(userId, data);
+    setIsLoading(false);
+    onOpenChange(false);
   });
 
   useEffect(() => {
-    if (isOpen) {
-      createUserForm.reset();
-      createUserForm.clearErrors();
+    if (isOpen && user) {
+      const fullName = `${user.firstName} ${user.lastName}`.trim();
+      editUserForm.reset({
+        name: fullName,
+        email: user.email,
+        city: user.address.city,
+      });
+      editUserForm.clearErrors();
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="cursor-pointer">
-          <Pencil />
-        </Button>
-      </DialogTrigger>
       <DialogOverlay />
       <DialogContent>
         <DialogHeader>
@@ -76,10 +107,10 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...createUserForm}>
-          <form className="flex flex-col gap-4" onSubmit={handleCreateUser}>
+        <Form {...editUserForm}>
+          <form className="flex flex-col gap-4" onSubmit={handleUpdateUser}>
             <FormField
-              control={createUserForm.control}
+              control={editUserForm.control}
               name="name"
               render={({ field }) => {
                 return (
@@ -99,7 +130,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
             />
 
             <FormField
-              control={createUserForm.control}
+              control={editUserForm.control}
               name="email"
               render={({ field }) => {
                 return (
@@ -120,7 +151,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
             />
 
             <FormField
-              control={createUserForm.control}
+              control={editUserForm.control}
               name="city"
               render={({ field }) => {
                 return (
@@ -148,8 +179,16 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
               >
                 Cancelar
               </Button>
-              <Button type="submit" className="cursor-pointer">
-                Atualizar
+              <Button
+                type="submit"
+                className="w-[120px] cursor-pointer disabled:cursor-not-allowed"
+                disabled={isLoading || !hasChanges}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Atualizar"
+                )}
               </Button>
             </div>
           </form>
