@@ -19,6 +19,7 @@ Aplicação React para gerenciamento de usuários com duas fontes de dados: uma 
 
 - **Usuários (API)**: lista de usuários via [DummyJSON](https://dummyjson.com) com busca e paginação
 - **Usuários locais**: CRUD em memória (Zustand), com criar, editar e excluir
+- **Validação de e-mail**: impede cadastro ou edição com e-mail já existente (no modal de edição, o próprio e-mail do usuário é permitido)
 - Busca em tempo real com debounce
 - Alternância entre tema claro/escuro
 - Interface responsiva com componentes do shadcn/ui
@@ -64,10 +65,9 @@ src/
 │   ├── ui/          # Componentes de UI (shadcn)
 │   ├── theme/       # Provider e toggle de tema
 │   └── ...          # CardTable, modais, etc.
-├── hooks/           # Hooks customizados (ex: useDebounce)
+├── hooks/           # Hooks customizados (useDebounce, useGetUsers, etc.)
 ├── lib/             # Utilitários, api, query-client
 ├── pages/           # Páginas da aplicação
-├── queries/         # Hooks do React Query
 ├── schemas/         # Schemas Zod para formulários
 ├── services/        # Serviços de API
 ├── stores/          # Stores Zustand

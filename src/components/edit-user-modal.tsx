@@ -42,6 +42,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
   userId,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const users = useLocalUsersStore((state) => state.users);
   const updateUser = useLocalUsersStore((state) => state.updateUser);
 
@@ -74,12 +75,23 @@ const EditUserModal: React.FC<EditUserModalProps> = ({
   const handleUpdateUser = editUserForm.handleSubmit(async (data) => {
     if (!userId) return;
 
-    setIsLoading(true);
+    const emailExistsInOtherUser = users.some(
+      (user) =>
+        user.id !== userId &&
+        user.email.toLowerCase() === data.email.toLowerCase(),
+    );
 
+    if (emailExistsInOtherUser) {
+      toast.error("Já existe outro usuário com este e-mail.");
+      return;
+    }
+
+    setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     updateUser(userId, data);
     toast.success("Usuário atualizado com sucesso");
+
     setIsLoading(false);
     onOpenChange(false);
   });

@@ -41,6 +41,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   onOpenChange,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const createUserForm = useForm<CreateUserSchema>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -49,15 +50,26 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       city: "",
     },
   });
+
+  const users = useLocalUsersStore((state) => state.users);
   const addUser = useLocalUsersStore((state) => state.addUser);
 
   const handleCreateUser = createUserForm.handleSubmit(async (data) => {
-    setIsLoading(true);
+    const emailExists = users.some(
+      (user) => user.email.toLowerCase() === data.email.toLowerCase(),
+    );
 
+    if (emailExists) {
+      toast.error("Já existe um usuário com este e-mail.");
+      return;
+    }
+
+    setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     addUser(data);
     toast.success("Usuário adicionado com sucesso");
+
     setIsLoading(false);
     onOpenChange(false);
   });

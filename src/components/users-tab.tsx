@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/input-group";
 
 import { useDebounce } from "@/hooks/use-debounce";
-import { useGetUsers } from "@/queries/use-get-users";
+import { useGetUsers } from "@/hooks/use-get-users";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CardTable, CardTableSkeleton } from "@/components";
