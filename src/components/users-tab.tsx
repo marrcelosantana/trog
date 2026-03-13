@@ -6,13 +6,20 @@ import {
 
 import { useGetUsers } from "@/queries/use-get-users";
 import { Search } from "lucide-react";
-import { CardTable } from "@/components";
+import { useState } from "react";
+import { CardTable, CardTableSkeleton } from "@/components";
+
+const LIMIT = 10;
 
 const UsersTab: React.FC = () => {
-  const { data: users } = useGetUsers({
-    limit: 10,
-    skip: 0,
+  const [page, setPage] = useState(1);
+
+  const { data, isPending } = useGetUsers({
+    limit: LIMIT,
+    skip: (page - 1) * LIMIT,
   });
+
+  const totalPages = data?.total ? Math.ceil(data.total / LIMIT) : 1;
 
   return (
     <div className="mt-4 flex flex-col gap-6 px-2">
@@ -24,7 +31,18 @@ const UsersTab: React.FC = () => {
           </InputGroupAddon>
         </InputGroup>
       </header>
-      <CardTable users={users?.users || []} />
+      {isPending ? (
+        <CardTableSkeleton />
+      ) : (
+        <CardTable
+          users={data?.users || []}
+          pagination={{
+            currentPage: page,
+            totalPages,
+            onPageChange: setPage,
+          }}
+        />
+      )}
     </div>
   );
 };
