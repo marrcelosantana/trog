@@ -9,7 +9,10 @@ import {
 
 import type { User } from "@/types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { CardTablePagination } from "@/components";
+import { CardTablePagination, DeleteUserModal } from "@/components";
+import { Pencil } from "lucide-react";
+import { Button } from "./ui/button";
+import { useState } from "react";
 
 interface PaginationProps {
   currentPage: number;
@@ -20,9 +23,24 @@ interface PaginationProps {
 interface CardTableProps {
   users: User[];
   pagination?: PaginationProps;
+  hasActions?: boolean;
 }
 
-const CardTable: React.FC<CardTableProps> = ({ users, pagination }) => {
+const EMPTY_STATE_MESSAGE = "Sem resultados por enquanto.";
+
+const CardTable: React.FC<CardTableProps> = ({
+  users,
+  pagination,
+  hasActions,
+}) => {
+  const isEmpty = users.length === 0;
+
+  const [deleteUserModalIsOpen, setDeleteUserModalIsOpen] = useState(false);
+
+  const handleDeleteUserModalOpenChange = (open: boolean) => {
+    setDeleteUserModalIsOpen(open);
+  };
+
   return (
     <>
       <div className="max-h-[50vh] overflow-y-auto">
@@ -32,24 +50,53 @@ const CardTable: React.FC<CardTableProps> = ({ users, pagination }) => {
               <TableHead>Nome</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Cidade</TableHead>
+              {hasActions && <TableHead>Ações</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="flex items-center gap-2 font-medium">
-                  <Avatar>
-                    <AvatarImage src={user.image} />
-                    <AvatarFallback>{user.firstName.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span>
-                    {user.firstName} {user.lastName}
-                  </span>
+            {isEmpty ? (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  className="text-muted-foreground h-24 text-center"
+                >
+                  {EMPTY_STATE_MESSAGE}
                 </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.address.city}</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="flex items-center gap-2 font-medium">
+                    <Avatar>
+                      <AvatarImage src={user.image} />
+                      <AvatarFallback>
+                        {user.firstName.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>
+                      {user.firstName} {user.lastName}
+                    </span>
+                  </TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.address.city}</TableCell>
+                  {hasActions && (
+                    <TableCell className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="cursor-pointer"
+                      >
+                        <Pencil />
+                      </Button>
+                      <DeleteUserModal
+                        isOpen={deleteUserModalIsOpen}
+                        onOpenChange={handleDeleteUserModalOpenChange}
+                      />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

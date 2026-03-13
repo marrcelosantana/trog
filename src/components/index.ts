@@ -4,6 +4,8 @@ import CardTable from "./card-table";
 import CardTableSkeleton from "./card-table-skeleton";
 import CardTablePagination from "./card-table-pagination";
 import CreateUserModal from "./create-user-modal";
+import DeleteUserModal from "./delete-user-modal";
+import EditUserModal from "./edit-user-modal";
 
 export {
   UsersTab,
@@ -12,4 +14,6 @@ export {
   CardTableSkeleton,
   CardTablePagination,
   CreateUserModal,
+  DeleteUserModal,
+  EditUserModal,
 };

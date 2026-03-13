@@ -49,7 +49,7 @@ const LocalUsersTab: React.FC = () => {
         <CreateUserModal isOpen={isOpen} onOpenChange={handleOpenChange} />
       </header>
 
-      <CardTable users={users} />
+      <CardTable users={users} hasActions />
     </div>
   );
 };

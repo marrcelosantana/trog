@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
 import { LocalUsersTab, UsersTab } from "@/components";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -16,17 +16,10 @@ export function Home() {
       <div className="flex justify-center">
         <Card className="w-full max-w-3xl">
           <CardContent>
-            <Tabs>
+            <Tabs value={tabs} onValueChange={setTabs}>
               <TabsList variant="line">
-                <TabsTrigger value="users" onClick={() => setTabs("users")}>
-                  Usuários
-                </TabsTrigger>
-                <TabsTrigger
-                  value="local-users"
-                  onClick={() => setTabs("local-users")}
-                >
-                  Usuários locais
-                </TabsTrigger>
+                <TabsTrigger value="users">Usuários</TabsTrigger>
+                <TabsTrigger value="local-users">Usuários locais</TabsTrigger>
               </TabsList>
               {tabs === "users" ? <UsersTab /> : <LocalUsersTab />}
             </Tabs>
